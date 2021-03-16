@@ -39,6 +39,7 @@ namespace HeadsetHue
 
         public async Task LightToColor(Color color)
         {
+  
             LightStatus led = new LightStatus();
 
             led.on = true;
@@ -179,14 +180,17 @@ namespace HeadsetHue
         {
             if (voipUp)
             {
+                form1.notifyIcon1.Icon = Properties.Resources.headphones_red;
                 form1.LightToColor(Color.Red);
             }
             else if (mobileUp | pstnUp)
             {
+                form1.notifyIcon1.Icon = Properties.Resources.headphones_purple;
                 form1.LightToColor(Color.Magenta);
             }
             else
             {
+                form1.notifyIcon1.Icon = Properties.Resources.headphones_white;
                 form1.LightToColor(Color.WhiteSmoke);
             }
         }
