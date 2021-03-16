@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using Interop.Plantronics;
 
 namespace HeadsetHue
 {
@@ -16,9 +17,16 @@ namespace HeadsetHue
     public partial class Form1 : Form
     {
         static LightStatus lastStatus = new LightStatus();
+        static bool pstnUp = false;
+        static bool mobileUp = false;
+        static bool voipUp = false;
+
+        static Form1 form1;
 
         public Form1()
         {
+            form1 = this;
+            InitPlantonics();
             InitializeComponent();
             LightToColor(Color.WhiteSmoke);
         }
@@ -125,6 +133,62 @@ namespace HeadsetHue
         {
             Show();
             this.WindowState = FormWindowState.Normal;
+        }
+
+        static void InitPlantonics()
+        {
+            ICOMSessionManager sessionManager = new COMSessionManager();
+            COMSession session;
+            sessionManager.Register("Headset Hue", out session);
+            COMDevice device = session.GetActiveDevice();
+            ICOMDeviceEvents_Event deviceEvents = device as ICOMDeviceEvents_Event;
+            ICOMBaseEvents_Event baseEvents = device as ICOMBaseEvents_Event;
+            baseEvents.onBaseEventReceived += BaseEvents_onBaseEventReceived;
+        }
+
+        private static void BaseEvents_onBaseEventReceived(COMBaseEventArgs args)
+        {
+            switch (args.EventType)
+            {
+                case BaseEventTypeExt.BaseEventTypeExt_MobileLinkEstablished:
+                    mobileUp = true;
+                    break;
+                case BaseEventTypeExt.BaseEventTypeExt_MobileLinkDown:
+                    mobileUp = false;
+                    break;
+                case BaseEventTypeExt.BaseEventTypeExt_PstnLinkEstablished:
+                    pstnUp = true;
+                    break;
+                case BaseEventTypeExt.BaseEventTypeExt_PstnLinkDown:
+                    pstnUp = false;
+                    break;
+                case BaseEventTypeExt.BaseEventTypeExt_VoipLinkEstablished:
+                    voipUp = true;
+                    break;
+                case BaseEventTypeExt.BaseEventTypeExt_VoipLinkDown:
+                    voipUp = false;
+                    break;
+                default:
+                    return;
+            }
+
+            UpdateLeds();
+        }
+
+        private static void UpdateLeds()
+        {
+            if (voipUp)
+            {
+                form1.LightToColor(Color.Red);
+            }
+            else if (mobileUp | pstnUp)
+            {
+                form1.LightToColor(Color.Magenta);
+            }
+            else
+            {
+                form1.LightToColor(Color.WhiteSmoke);
+            }
         }
     }
 
