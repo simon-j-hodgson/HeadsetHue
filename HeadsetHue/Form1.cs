@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using Interop.Plantronics;
+using AudioSwitcher.AudioApi;
+using AudioSwitcher.AudioApi.CoreAudio;
 
 namespace HeadsetHue
 {
@@ -21,14 +22,16 @@ namespace HeadsetHue
         static bool mobileUp = false;
         static bool voipUp = false;
 
+        static CoreAudioDevice device;
+
         static Form1 form1;
 
         public Form1()
         {
             form1 = this;
-            InitPlantonics();
             InitializeComponent();
-            LightToColor(Color.WhiteSmoke);
+            device = new CoreAudioController().DefaultCaptureCommunicationsDevice;
+            //LightToColor(Color.WhiteSmoke);
         }
 
         private async void button1_Click(object sender, EventArgs e)
@@ -75,7 +78,7 @@ namespace HeadsetHue
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
             
-            HttpResponseMessage response = await client.PutAsJsonAsync($"/api/o7Wx3vf2pdlbHdmlFNiqlqmJRV5eeISKBeentqMs/lights/1/state", status);
+            HttpResponseMessage response = await client.PutAsJsonAsync($"/api/o7Wx3vf2pdlbHdmlFNiqlqmJRV5eeISKBeentqMs/lights/34/state", status);
 
             response.EnsureSuccessStatusCode();
 
@@ -136,46 +139,6 @@ namespace HeadsetHue
             this.WindowState = FormWindowState.Normal;
         }
 
-        static void InitPlantonics()
-        {
-            ICOMSessionManager sessionManager = new COMSessionManager();
-            COMSession session;
-            sessionManager.Register("Headset Hue", out session);
-            COMDevice device = session.GetActiveDevice();
-            ICOMDeviceEvents_Event deviceEvents = device as ICOMDeviceEvents_Event;
-            ICOMBaseEvents_Event baseEvents = device as ICOMBaseEvents_Event;
-            baseEvents.onBaseEventReceived += BaseEvents_onBaseEventReceived;
-        }
-
-        private static void BaseEvents_onBaseEventReceived(COMBaseEventArgs args)
-        {
-            switch (args.EventType)
-            {
-                case BaseEventTypeExt.BaseEventTypeExt_MobileLinkEstablished:
-                    mobileUp = true;
-                    break;
-                case BaseEventTypeExt.BaseEventTypeExt_MobileLinkDown:
-                    mobileUp = false;
-                    break;
-                case BaseEventTypeExt.BaseEventTypeExt_PstnLinkEstablished:
-                    pstnUp = true;
-                    break;
-                case BaseEventTypeExt.BaseEventTypeExt_PstnLinkDown:
-                    pstnUp = false;
-                    break;
-                case BaseEventTypeExt.BaseEventTypeExt_VoipLinkEstablished:
-                    voipUp = true;
-                    break;
-                case BaseEventTypeExt.BaseEventTypeExt_VoipLinkDown:
-                    voipUp = false;
-                    break;
-                default:
-                    return;
-            }
-
-            UpdateLeds();
-        }
-
         private static void UpdateLeds()
         {
             if (voipUp)
@@ -192,6 +155,28 @@ namespace HeadsetHue
             {
                 form1.notifyIcon1.Icon = Properties.Resources.headphones_white;
                 form1.LightToColor(Color.WhiteSmoke);
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+
+            if (device != null)
+            {
+
+                if (device.SessionController.ActiveSessions().Count() > 0)
+                {
+                    form1.LightOn();  
+                }
+                else
+                {
+                    form1.LightOff();
+                }
             }
         }
     }
