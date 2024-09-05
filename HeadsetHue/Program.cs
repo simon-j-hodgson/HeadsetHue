@@ -18,8 +18,6 @@ namespace HeadsetHue
         [STAThread]
         static void Main()
         {
-            SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
-            SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
 
             Application.ApplicationExit += Application_ApplicationExit;
 
@@ -27,41 +25,6 @@ namespace HeadsetHue
             Application.SetCompatibleTextRenderingDefault(false);
             form1 = new Form1();
             Application.Run(form1);
-
-            SystemEvents.PowerModeChanged -= new PowerModeChangedEventHandler(SystemEvents_PowerModeChanged);
-            
-        }
-
-        private async static void SystemEvents_SessionSwitch(object sender, SessionSwitchEventArgs e)
-        {
-            switch (e.Reason)
-            {
-                case SessionSwitchReason.ConsoleDisconnect:
-                case SessionSwitchReason.RemoteDisconnect:
-                case SessionSwitchReason.SessionLogoff:
-                case SessionSwitchReason.SessionLock:
-                    await form1.LightOff();
-                    break;
-                case SessionSwitchReason.ConsoleConnect:
-                case SessionSwitchReason.RemoteConnect:
-                case SessionSwitchReason.SessionLogon:
-                case SessionSwitchReason.SessionUnlock:
-                    await form1.LightOn();
-                    break;
-            }
-        }
-
-        private static async void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
-        {
-            switch (e.Mode)
-            {
-                case PowerModes.Suspend:
-                    await form1.LightOff();
-                    break;
-                case PowerModes.Resume:
-                    await form1.LightOn();
-                    break;
-            }
         }
 
         private static async void Application_ApplicationExit(object sender, EventArgs e)

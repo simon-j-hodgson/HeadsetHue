@@ -31,13 +31,6 @@ namespace HeadsetHue
             form1 = this;
             InitializeComponent();
             device = new CoreAudioController().DefaultCaptureCommunicationsDevice;
-            //LightToColor(Color.WhiteSmoke);
-        }
-
-        private async void button1_Click(object sender, EventArgs e)
-        {
-            notifyIcon1.Icon = Properties.Resources.headphones_red;
-            await LightToColor(Color.Red);
         }
 
         public async Task LightToColor(Color color)
@@ -77,12 +70,16 @@ namespace HeadsetHue
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
-            
-            HttpResponseMessage response = await client.PutAsJsonAsync($"/api/o7Wx3vf2pdlbHdmlFNiqlqmJRV5eeISKBeentqMs/lights/34/state", status);
 
-            response.EnsureSuccessStatusCode();
-
-            lastStatus = status;
+            try
+            {
+                HttpResponseMessage response = await client.PutAsJsonAsync($"/api/o7Wx3vf2pdlbHdmlFNiqlqmJRV5eeISKBeentqMs/lights/34/state", status);
+                response.EnsureSuccessStatusCode();
+                lastStatus = status;
+            }
+            catch (Exception ex)
+            {
+            }
         }
 
         private async void button2_Click(object sender, EventArgs e)
@@ -90,36 +87,13 @@ namespace HeadsetHue
             await LightOff();
         }
 
-        private async void button3_Click(object sender, EventArgs e)
-        {
-            notifyIcon1.Icon = Properties.Resources.headphones_yellow;
-            await LightToColor(Color.Goldenrod);
-        }
-
         private async void button4_Click(object sender, EventArgs e)
         {
-            notifyIcon1.Icon = Properties.Resources.headphones_white;
-            await LightToColor(Color.WhiteSmoke);
+            notifyIcon1.Icon = Properties.Resources.headphones_red;
+            await LightOn();
         }
 
-        private async void button5_Click(object sender, EventArgs e)
-        {
-            notifyIcon1.Icon = Properties.Resources.headphones_green;
-            await LightToColor(Color.LightGreen);
-        }
-
-        private async void button6_Click(object sender, EventArgs e)
-        {
-            notifyIcon1.Icon = Properties.Resources.headphones_purple;
-            await LightToColor(Color.Magenta);
-
-        }
-
-        private async void button7_Click(object sender, EventArgs e)
-        {
-            await LightToColor(Color.Cyan);
-        }
-
+       
         private async void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             await LightOff();
@@ -139,25 +113,6 @@ namespace HeadsetHue
             this.WindowState = FormWindowState.Normal;
         }
 
-        private static void UpdateLeds()
-        {
-            if (voipUp)
-            {
-                form1.notifyIcon1.Icon = Properties.Resources.headphones_red;
-                form1.LightToColor(Color.Red);
-            }
-            else if (mobileUp | pstnUp)
-            {
-                form1.notifyIcon1.Icon = Properties.Resources.headphones_purple;
-                form1.LightToColor(Color.Magenta);
-            }
-            else
-            {
-                form1.notifyIcon1.Icon = Properties.Resources.headphones_white;
-                form1.LightToColor(Color.WhiteSmoke);
-            }
-        }
-
         private void Form1_Load(object sender, EventArgs e)
         {
             
@@ -171,10 +126,12 @@ namespace HeadsetHue
 
                 if (device.SessionController.ActiveSessions().Count() > 0)
                 {
+                    form1.notifyIcon1.Icon = Properties.Resources.headphones_red;
                     form1.LightOn();  
                 }
                 else
                 {
+                    form1.notifyIcon1.Icon = Properties.Resources.headphones_white;
                     form1.LightOff();
                 }
             }
