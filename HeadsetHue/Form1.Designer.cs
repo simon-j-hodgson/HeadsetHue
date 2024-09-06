@@ -30,31 +30,31 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.button2 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
+            this.offButton = new System.Windows.Forms.Button();
+            this.onButton = new System.Windows.Forms.Button();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
-            // button2
+            // offButton
             // 
-            this.button2.Location = new System.Drawing.Point(16, 72);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(112, 49);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "Off";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.offButton.Location = new System.Drawing.Point(16, 72);
+            this.offButton.Name = "offButton";
+            this.offButton.Size = new System.Drawing.Size(112, 49);
+            this.offButton.TabIndex = 1;
+            this.offButton.Text = "Off";
+            this.offButton.UseVisualStyleBackColor = true;
+            this.offButton.Click += new System.EventHandler(this.offButton_Click);
             // 
-            // button4
+            // onButton
             // 
-            this.button4.Location = new System.Drawing.Point(16, 17);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(112, 51);
-            this.button4.TabIndex = 3;
-            this.button4.Text = "White";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.onButton.Location = new System.Drawing.Point(16, 17);
+            this.onButton.Name = "onButton";
+            this.onButton.Size = new System.Drawing.Size(112, 51);
+            this.onButton.TabIndex = 3;
+            this.onButton.Text = "On";
+            this.onButton.UseVisualStyleBackColor = true;
+            this.onButton.Click += new System.EventHandler(this.onButton_Click);
             // 
             // notifyIcon1
             // 
@@ -74,9 +74,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(266, 160);
-            this.Controls.Add(this.button4);
-            this.Controls.Add(this.button2);
+            this.ClientSize = new System.Drawing.Size(148, 160);
+            this.Controls.Add(this.offButton);
+            this.Controls.Add(this.onButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -93,8 +93,8 @@
         }
 
         #endregion
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button offButton;
+        private System.Windows.Forms.Button onButton;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private System.Windows.Forms.Timer timer1;
     }
